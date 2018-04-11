@@ -33,8 +33,14 @@ def create_app():
     @app.route("/emails/", endpoint='emails_list', methods=['GET'])
     def emails_list():
         limit = int(request.args.get('limit', 10))
+        sent = request.args.get('sent')
 
-        emails = Email.query.order_by(Email.id).limit(limit).all()
+        if sent == 'true':
+            emails = Email.query.filter_by(sent=True).order_by(Email.id).limit(limit).all()
+        elif sent == 'false':
+            emails = Email.query.filter_by(sent=False).order_by(Email.id).limit(limit).all()
+        else:
+            emails = Email.query.order_by(Email.id).limit(limit).all()
 
         return jsonify([{'id': email.id,
                          'from_address': email.from_address,
@@ -74,8 +80,8 @@ def create_app():
         db.session.add(new_email)
         db.session.commit()
 
-        if autosend:
-            sent = new_email.send()  # Doesn't mark as sent in bbdd
+        if autosend == 'true':
+            sent = new_email.send()  # TODO: Fix. Doesn't mark as sent in bbdd
 
         return jsonify({'id': new_email.id}), 201
 

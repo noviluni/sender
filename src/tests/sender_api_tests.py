@@ -9,7 +9,7 @@ from models import Email
 def test_create_email():
     app = create_app()  # TODO: create fixture
 
-    url = 'http://0.0.0.0:3000/new_email/'  # Crear fixture per base_url
+    url = 'http://0.0.0.0:3000/emails/'  # Crear fixture per base_url
     playload = {'to_address': DEFAULT_TO_ADDRESS,
                 'subject': 'Just testing sender app',
                 'text_message': 'This is the email body when testing sender app',
@@ -21,6 +21,7 @@ def test_create_email():
 
     email_id = response.json().get('id')
     assert Email.query.filter_by(id=email_id).count() == 1
+    # TODO: Test create email without subject, text, etc.
 
 
 def test_list_emails():

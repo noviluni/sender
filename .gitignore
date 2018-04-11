@@ -1,6 +1,6 @@
 .idea/*
 conf.py
-temp/*
+src/tmp/*
 .cache/*
 .pytest_cache/*
 __pycache__/*

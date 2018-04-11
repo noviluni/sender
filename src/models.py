@@ -2,6 +2,7 @@ import datetime
 
 from flask_sqlalchemy import SQLAlchemy
 
+from conf import DEFAULT_TO_ADDRESS
 from utils import send_email
 
 db = SQLAlchemy()
@@ -12,16 +13,16 @@ class Email(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
-    from_address = db.Column(db.String(200))  # TODO: Add email validation
-    to_address = db.Column(db.String(200))  # TODO: Add email validation
+    from_address = db.Column(db.String(200), nullable=False)  # TODO: Add email validation
+    to_address = db.Column(db.String(200), nullable=False, default=DEFAULT_TO_ADDRESS)  # TODO: Add email validation
 
-    subject = db.Column(db.String(255))
-    text_message = db.Column(db.String(200))  # TODO: Define bigger body?
+    subject = db.Column(db.String(255), nullable=False)
+    text_message = db.Column(db.String(200), nullable=False)  # TODO: Define bigger body?
     html_message = db.Column(db.String(200))  # TODO: Define bigger body?
 
     created_at = db.Column(db.DateTime, nullable=False)
     sent = db.Column(db.Boolean(), default=False, nullable=False)
-    sent_at = db.Column(db.DateTime, nullable=True)
+    sent_at = db.Column(db.DateTime)
     retries = db.Column(db.Integer, default=0)
 
     def __repr__(self):
@@ -38,13 +39,10 @@ class Email(db.Model):
     def send(self):
 
         sent = send_email(**self.__dict__)
-        self. retries += 1
+        self.retries += 1  # TODO: Test
 
         if sent:
             self.sent = True
             self.sent_at = datetime.datetime.now()
-            db.session.commit()
-            return True
-        else:
-            db.session.commit()
-            return False
+        db.session.commit()
+        return sent

@@ -53,18 +53,3 @@ def send_email(subject, text_message, html_message=None, to_address=DEFAULT_TO_A
         print("El correo no pudo ser enviado. Error: {}".format(e))  # TODO: change to loggin
         smtpserver.close()
         return False
-
-
-# if __name__ == '__main__':
-#     subject = "Movimientos en tus cuentas"
-#     body_text = "Movimientos!!"
-#
-#     try:
-#         f = codecs.open("templates/prueba.html", 'r', 'utf-8')
-#         body_html = f.read()
-#         f.close()
-#     except FileNotFoundError as e:
-#         print("No existe la platilla html")
-#         body_html = body_text
-#
-#     send_email(subject, body_text, body_html=None, to_email='noviluni@gmail.com')

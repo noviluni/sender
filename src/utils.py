@@ -15,7 +15,7 @@ def send_email(subject, text_message, html_message=None, to_address=DEFAULT_TO_A
         smtpserver.ehlo()
         smtpserver.starttls()
         smtpserver.ehlo()
-        print("Conexion exitosa con Gmail")  # TODO: change to loggin
+        print("Conexion exitosa con Gmail")  # TODO: change to logging
 
         try:
             gmail_user = GMAIL_USER
@@ -23,12 +23,13 @@ def send_email(subject, text_message, html_message=None, to_address=DEFAULT_TO_A
             smtpserver.login(gmail_user, gmail_pwd)
 
         except smtplib.SMTPException as e:
-            print("Autenticacion incorrecta o intento bloqueado por parte de Google. Error: {}".format(e))  # TODO: change to loggin
+            print("Autenticacion incorrecta o intento bloqueado por parte de Google. Error: {}".format(e))
+            # TODO: change to logging
             smtpserver.close()
             return False
 
     except (socket.gaierror, socket.error, socket.herror, smtplib.SMTPException) as e:
-        print("Fallo en la conexion con Gmail. Error: {}".format(e))  # TODO: change to loggin
+        print("Fallo en la conexion con Gmail. Error: {}".format(e))  # TODO: change to logging
         return False
 
     msg = MIMEMultipart('alternative')
@@ -45,11 +46,11 @@ def send_email(subject, text_message, html_message=None, to_address=DEFAULT_TO_A
 
     try:
         smtpserver.sendmail(gmail_user, to_address, msg.as_string())
-        print("El correo se envio correctamente")  # TODO: change to loggin
+        print("El correo se envio correctamente")  # TODO: change to logging
         smtpserver.close()
         return True
 
     except smtplib.SMTPException as e:
-        print("El correo no pudo ser enviado. Error: {}".format(e))  # TODO: change to loggin
+        print("El correo no pudo ser enviado. Error: {}".format(e))  # TODO: change to logging
         smtpserver.close()
         return False

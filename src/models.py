@@ -29,17 +29,16 @@ class Email(db.Model):
         return '<Email {} - {}: {}>'.format(self.id, self.to_address, self.subject)
 
     def __init__(self, from_address, to_address, subject, text_message, html_message):
-        self.from_address = from_address
-        self.to_address = to_address
+        self.from_address = from_address  # TODO: Add email validation
+        self.to_address = to_address  # TODO: Add email validation
         self.subject = subject
         self.text_message = text_message
         self.html_message = html_message
         self.created_at = datetime.datetime.now()
 
     def send(self):
-
         sent = send_email(**self.__dict__)
-        self.retries += 1  # TODO: Test
+        self.retries += 1
 
         if sent:
             self.sent = True

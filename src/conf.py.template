@@ -1,0 +1,7 @@
+DEBUG = False
+
+DEFAULT_TO_ADDRESS = ''
+
+GMAIL_USER = ''
+
+GMAIL_PASSWORD = ''

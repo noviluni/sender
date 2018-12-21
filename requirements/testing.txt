@@ -1,0 +1,4 @@
+-r base.txt
+
+pytest==3.5.0
+requests==2.18.4

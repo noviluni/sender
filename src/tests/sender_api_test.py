@@ -13,7 +13,7 @@
 # def test_create_email():
 #     app = create_app()  # TODO: create fixture
 #
-#     url = 'http://0.0.0.0:3000/email/'  # Create fixture for base_url
+#     url = 'http://0.0.0.0:3000/emails/'  # Create fixture for base_url
 #     playload = {'to_address': DEFAULT_TO_ADDRESS,
 #                 'subject': 'Just testing sender app',
 #                 'text_message': 'This is the email body when testing sender app',
@@ -31,7 +31,7 @@
 # # def test_list_emails():
 # #     app = create_app()  # TODO: create fixture
 # #
-# #     url = 'http://0.0.0.0:3000/email/'
+# #     url = 'http://0.0.0.0:3000/emails/'
 # #
 # #     response = requests.get(url=url, headers={'Content-type': 'application/json'})
 # #     assert 200 == response.status_code

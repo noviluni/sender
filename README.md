@@ -36,7 +36,7 @@ docker-compose up --build
 #### To list all created emails:
 
 ```
-GET to http://0.0.0.0:3000/email/
+GET to http://0.0.0.0:3000/emails/
 ```
 
 Returns a list of all e-mails.
@@ -45,7 +45,7 @@ Returns a list of all e-mails.
 #### To create an email:
 
 ```
-POST to http://0.0.0.0:3000/email/
+POST to http://0.0.0.0:3000/emails/
 ```
 
 __Parameters__:

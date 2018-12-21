@@ -30,7 +30,7 @@ def create_app():
     def not_found(error):
         return make_response(jsonify({'error': 'Bad request'}), 400)
 
-    @app.route("/email/", endpoint='email_list', methods=['GET'])
+    @app.route("/emails/", endpoint='email_list', methods=['GET'])
     def email_list():
         limit = int(request.args.get('limit', 10))
         sent = request.args.get('sent')
@@ -55,7 +55,7 @@ def create_app():
                          } for email in emails]
                        )
 
-    @app.route('/email/', endpoint='create_email', methods=['POST'])
+    @app.route('/emails/', endpoint='create_email', methods=['POST'])
     def create_email():
         autosend = request.args.get('autosend')
 
@@ -87,7 +87,7 @@ def create_app():
 
         return jsonify({'id': new_email.id, 'sent': sent}), 201
 
-    @app.route("/email/<int:email_id>", endpoint='email_detail', methods=['GET'])
+    @app.route("/emails/<int:email_id>", endpoint='email_detail', methods=['GET'])
     def email_detail(email_id):
         email = Email.query.filter_by(id=email_id).first()
 
@@ -106,7 +106,7 @@ def create_app():
                         'retries': email.retries,
                         })
 
-    @app.route("/email/<int:email_id>/send", endpoint='send_email', methods=['POST'])
+    @app.route("/emails/<int:email_id>/send", endpoint='send_email', methods=['POST'])
     def send_email(email_id):
 
         email = Email.query.filter_by(id=email_id).first()

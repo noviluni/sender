@@ -37,7 +37,7 @@ class Email(db.Model):
         self.created_at = datetime.datetime.now()
         self.sent = sent
 
-    def send(self, fnx=send_email):
+    def send(self, sender_function=send_email):
         self.retries += 1
         email_data = self.get_email_data()
         sent = fnx(**email_data)

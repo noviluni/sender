@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 
 from flask_sqlalchemy import SQLAlchemy
 
@@ -13,8 +13,8 @@ class Email(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     
-    from_address = db.Column(db.String(200), nullable=False)  # TODO: Add email validation
-    to_address = db.Column(db.String(200), nullable=False, default=DEFAULT_TO_ADDRESS)  # TODO: Add email validation
+    from_address = db.Column(db.String(200), nullable=False)
+    to_address = db.Column(db.String(200), nullable=False, default=DEFAULT_TO_ADDRESS)
 
     subject = db.Column(db.String(255), nullable=False)
     text_message = db.Column(db.String(200), nullable=False)  # TODO: Define bigger body?
@@ -28,14 +28,19 @@ class Email(db.Model):
     def __repr__(self):
         return '<Email {} - {}: {}>'.format(self.id, self.to_address, self.subject)
 
-    def __init__(self, from_address, to_address, subject, text_message, html_message, sent=False):
-        self.from_address = from_address  # TODO: Add email validation
-        self.to_address = to_address  # TODO: Add email validation
+    def __init__(self, from_address, to_address, subject, text_message, html_message, created_at=None, sent=False):
+        self.from_address = from_address
+        self.to_address = to_address
         self.subject = subject
         self.text_message = text_message
         self.html_message = html_message
-        self.created_at = datetime.datetime.now()
+        self.created_at = datetime.utcnow() if created_at is None else created_at
         self.sent = sent
+    
+    @validates('from_address', 'to_address')
+    def _validate_email(self, key, address):
+        assert '@' in address
+        return address
 
     def send(self, sender_function=send_email):
         self.retries += 1

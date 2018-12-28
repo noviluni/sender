@@ -1,11 +1,9 @@
-DEBUG = False
+import os
 
-DEFAULT_TO_ADDRESS = ''
 
-FROM_ADDRESS = ''
-
-EMAIL_PASSWORD = ''
-
-SMTP_HOST = 'smtp.gmail.com'
-
-SMTP_PORT = 587
+DEBUG = os.environ['DEBUG']
+DEFAULT_TO_ADDRESS = os.environ['DEFAULT_TO_ADDRESS']
+FROM_ADDRESS = os.environ['FROM_ADDRESS']
+EMAIL_PASSWORD = os.environ['EMAIL_PASSWORD']
+SMTP_HOST = os.environ['SMTP_HOST']
+SMTP_PORT = os.environ['SMTP_PORT']

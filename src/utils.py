@@ -41,12 +41,7 @@ def send_email(subject, text_message, html_message=None, to_address=DEFAULT_TO_A
     msg = generate_message(subject, from_address, to_address, text_message, html_message)
 
     # Send email
-    try:
-        return send(smtpserver, from_address, to_address, msg):
-    except smtplib.SMTPException as e:
-        print("Email couldn't be sent. Error: {}".format(e))  # TODO: change to logging
-        smtpserver.close()
-        return False
+    return send(smtpserver, from_address, to_address, msg)
 
 def get_connection(smtp_host=SMTP_HOST, port=SMTP_PORT):
     smtpserver = smtplib.SMTP(smtp_host, port)
@@ -75,8 +70,20 @@ def generate_message(subject, from_address, to_address, text_message, html_messa
         msg.attach(part2)
     return msg
 
-def send(smtpserver, from_address, to_address, msg):
-    smtpserver.sendmail(from_address, to_address, msg.as_string())
-    print("Email has been sent")  # TODO: change to logging
+def send(smtpserver, from_address, to_address, message):
+    """
+    Given a logged SMTP server, a "from_address", a "to_address" and a "message", sends
+    the message through the SMTP server.
+    
+    returns True if emails has been sent, else return False.
+    """
+    sent = False
+    try:
+        smtpserver.sendmail(from_address, to_address, message.as_string())
+        sent = True
+        print("Email has been sent")  # TODO: change to logging
+    except smtplib.SMTPException as e:
+        print("Email couldn't be sent. Error: {}".format(e))  # TODO: change to logging
+    
     smtpserver.close()
-    return True
+    return sent

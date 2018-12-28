@@ -16,3 +16,4 @@ Makefile
 
 # Develop
 .idea/*
+messages.db

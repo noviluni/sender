@@ -7,7 +7,7 @@ from models import Email, db
 
 def create_app():
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tmp/messages.db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///messages.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     # app_settings = os.getenv('APP_SETTINGS')

@@ -3,7 +3,7 @@
 Email sender microservice
 
 
-This is a proof of concept. A RESTful microservice to send e-mails using gmail credentials.
+This is a proof of concept. A RESTful microservice to send e-mails using smtp credentials.
 
 
 ### Configuration
@@ -53,7 +53,7 @@ __Parameters__:
 ```
 autosend: true|false
 ```
-Determines if email should be sended in the same moment or not.
+Determines if email should be sent in the same moment or not.
 
 
 __Body (json)__:

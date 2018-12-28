@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import validates
 
 from conf import DEFAULT_TO_ADDRESS
 from utils import send_email
@@ -21,9 +22,9 @@ class Email(db.Model):
     html_message = db.Column(db.String(200))  # TODO: Define bigger body?
 
     created_at = db.Column(db.DateTime, nullable=False)
-    sent = db.Column(db.Boolean(), server_default=False, nullable=False)
+    sent = db.Column(db.Boolean(), server_default='f', nullable=False)
     sent_at = db.Column(db.DateTime)
-    retries = db.Column(db.Integer, server_default=0)
+    retries = db.Column(db.Integer, server_default='0')
 
     def __repr__(self):
         return '<Email {} - {}: {}>'.format(self.id, self.to_address, self.subject)
@@ -43,13 +44,16 @@ class Email(db.Model):
         return address
 
     def send(self, sender_function=send_email):
-        self.retries += 1
+        if self.retries is None:
+            self.retries = 1
+        else:
+            self.retries += 1
         email_data = self.get_email_data()
         sent = sender_function(**email_data)
 
         if sent:
             self.sent = True
-            self.sent_at = datetime.datetime.now()
+            self.sent_at = datetime.utcnow()
         return sent
     
     def get_email_data(self):

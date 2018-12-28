@@ -2,6 +2,10 @@ DEBUG = False
 
 DEFAULT_TO_ADDRESS = ''
 
-GMAIL_USER = ''
+FROM_ADDRESS = ''
 
-GMAIL_PASSWORD = ''
+EMAIL_PASSWORD = ''
+
+SMTP_HOST = 'smtp.gmail.com'
+
+SMTP_PORT = 587

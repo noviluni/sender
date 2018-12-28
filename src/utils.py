@@ -4,7 +4,7 @@ import socket
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-from conf import GMAIL_USER, GMAIL_PASSWORD, DEFAULT_TO_ADDRESS
+from conf import FROM_ADDRESS, EMAIL_PASSWORD, DEFAULT_TO_ADDRESS, SMTP_HOST, SMTP_PORT
 
 
 def send_email(subject, text_message, html_message=None, to_address=DEFAULT_TO_ADDRESS):
@@ -17,18 +17,18 @@ def send_email(subject, text_message, html_message=None, to_address=DEFAULT_TO_A
     Partially based on https://stackoverflow.com/questions/882712/sending-html-email-using-python
     """
     
-    gmail_user = GMAIL_USER
-    gmail_pwd = GMAIL_PASSWORD
+    from_address = FROM_ADDRESS
+    email_password = EMAIL_PASSWORD
 
     smtpserver = None
 
     try:
-        # Connection with gmail
+        # Connection with smtp service
         smtpserver = get_connection()
         
         try:
             # Login
-            smtpserver = login(server)
+            smtpserver = login(server, from_address, email_password)
         except smtplib.SMTPException as e:
             print("Incorrect authentication data or attempt blocked by Google. Error: {}".format(e)) # TODO: change to logging
             smtpserver.close()
@@ -38,17 +38,17 @@ def send_email(subject, text_message, html_message=None, to_address=DEFAULT_TO_A
         print("Error connecting to Gmail. Error: {}".format(e))  # TODO: change to logging
         return False
 
-    msg = generate_message(subject, gmail_user, to_address, text_message, html_message)
+    msg = generate_message(subject, from_address, to_address, text_message, html_message)
 
     # Send email
     try:
-        return send(smtpserver, gmail_user, to_address, msg):
+        return send(smtpserver, from_address, to_address, msg):
     except smtplib.SMTPException as e:
         print("Email couldn't be sent. Error: {}".format(e))  # TODO: change to logging
         smtpserver.close()
         return False
 
-def get_connection(smtp_host="smtp.gmail.com", port=587):
+def get_connection(smtp_host=SMTP_HOST, port=SMTP_PORT):
     smtpserver = smtplib.SMTP(smtp_host, port)
     smtpserver.ehlo()
     smtpserver.starttls()
@@ -56,8 +56,8 @@ def get_connection(smtp_host="smtp.gmail.com", port=587):
     print("Connection successful with Gmail")  # TODO: change to logging
     return smtpserver
     
-def login(server, user, pwd):
-    smtpserver.login(user, pwd)
+def login(smtpserver, user, password):
+    smtpserver.login(user, password)
     
 def generate_message(subject, from_address, to_address, text_message, html_message):
     """
@@ -75,7 +75,7 @@ def generate_message(subject, from_address, to_address, text_message, html_messa
         msg.attach(part2)
     return msg
 
-def send(server, from_address, to_address, msg):
+def send(smtpserver, from_address, to_address, msg):
     smtpserver.sendmail(from_address, to_address, msg.as_string())
     print("Email has been sent")  # TODO: change to logging
     smtpserver.close()

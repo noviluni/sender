@@ -16,6 +16,7 @@ def send_email(subject, text_message, html_message=None, to_address=DEFAULT_TO_A
     
     Partially based on https://stackoverflow.com/questions/882712/sending-html-email-using-python
     """
+    
 
     try:
         # Connection with gmail
@@ -27,8 +28,6 @@ def send_email(subject, text_message, html_message=None, to_address=DEFAULT_TO_A
 
         # Login
         try:
-            gmail_user = GMAIL_USER
-            gmail_pwd = GMAIL_PASSWORD
             smtpserver.login(gmail_user, gmail_pwd)
 
         except smtplib.SMTPException as e:

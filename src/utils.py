@@ -17,6 +17,9 @@ def send_email(subject, text_message, html_message=None, to_address=DEFAULT_TO_A
     Partially based on https://stackoverflow.com/questions/882712/sending-html-email-using-python
     """
     
+    gmail_user = GMAIL_USER
+    gmail_pwd = GMAIL_PASSWORD
+    
 
     try:
         # Connection with gmail

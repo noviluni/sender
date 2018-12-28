@@ -10,7 +10,7 @@ from conf import FROM_ADDRESS, EMAIL_PASSWORD, DEFAULT_TO_ADDRESS, SMTP_HOST, SM
 def send_email(subject, text_message, html_message=None, to_address=DEFAULT_TO_ADDRESS):
     """
     Given a "subject", a "text_message" and optionally a "html_message" and a "to_address",
-    send an e-mail through gmail smtp.
+    send an e-mail through smtp.
     
     Returns True if e-mail has been sent, else returns False.
     
@@ -35,7 +35,7 @@ def send_email(subject, text_message, html_message=None, to_address=DEFAULT_TO_A
             return False
     
     except (socket.gaierror, socket.error, socket.herror, smtplib.SMTPException) as e:
-        print("Error connecting to Gmail. Error: {}".format(e))  # TODO: change to logging
+        print("Error connecting to SMTP server. Error: {}".format(e))  # TODO: change to logging
         return False
 
     msg = generate_message(subject, from_address, to_address, text_message, html_message)
@@ -53,7 +53,7 @@ def get_connection(smtp_host=SMTP_HOST, port=SMTP_PORT):
     smtpserver.ehlo()
     smtpserver.starttls()
     smtpserver.ehlo()
-    print("Connection successful with Gmail")  # TODO: change to logging
+    print("Connection successful with SMTP server")  # TODO: change to logging
     return smtpserver
     
 def login(smtpserver, user, password):

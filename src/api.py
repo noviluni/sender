@@ -69,7 +69,7 @@ def create_app():
         text_message = json.get('text_message')
         html_message = json.get('html_message')
 
-        from_address = conf.GMAIL_USER
+        from_address = conf.FROM_ADDRESS
 
         new_email = Email(from_address=from_address,
                           to_address=to_address if to_address else conf.DEFAULT_TO_ADDRESS,
@@ -77,14 +77,12 @@ def create_app():
                           text_message=text_message,
                           html_message=html_message)
 
+        sent = 'false'
+        if autosend == 'true':
+            sent = new_email.send()
+        
         db.session.add(new_email)
         db.session.commit()
-
-        sent = 'false'
-
-        if autosend == 'true':
-            sent = new_email.send()  # TODO: Fix. Doesn't mark as sent in bbdd
-
         return jsonify({'id': new_email.id, 'sent': sent}), 201
 
     @app.route("/emails/<int:email_id>", endpoint='email_detail', methods=['GET'])

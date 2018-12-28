@@ -45,7 +45,7 @@ class Email(db.Model):
     def send(self, sender_function=send_email):
         self.retries += 1
         email_data = self.get_email_data()
-        sent = fnx(**email_data)
+        sent = sender_function(**email_data)
 
         if sent:
             self.sent = True

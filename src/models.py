@@ -48,8 +48,9 @@ class Email(db.Model):
         return sent
     
     def get_email_data(self):
-        email_data = {'subject': self.subject,
-                      'text_message': self.text_message,
-                      'html_message': self.html_message,
-                      'to_address': self.to_address}
-        return email_data
+        return {
+            'subject': self.subject,
+            'text_message': self.text_message,
+            'html_message': self.html_message,
+            'to_address': self.to_address
+        }

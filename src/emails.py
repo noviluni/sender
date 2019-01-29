@@ -25,7 +25,7 @@ def get_smtp_connection(smtp_host=SMTP_HOST, port=SMTP_PORT):
     from_address = FROM_ADDRESS
     email_password = EMAIL_PASSWORD
 
-    smpt_server = None
+    smtp_server = None
 
     try:
         smtp_server = _get_smtp_connection(smtp_host, port)
@@ -34,7 +34,7 @@ def get_smtp_connection(smtp_host=SMTP_HOST, port=SMTP_PORT):
         yield smtp_server
 
     finally:
-        smpt_server.close()
+        smtp_server.close()
 
 
 def _get_smtp_connection(smtp_host, port):
@@ -52,11 +52,8 @@ def _get_smtp_connection(smtp_host, port):
         smtpserver.ehlo()
         return smtpserver
 
-    except (socket.gaierror,
-            socket.error,
-            socket.herror,
-            smtplib.SMTPException) as e:
-        msg = "Error connection to SMTP server. Error: {}".format(e)
+    except (socket.gaierror, socket.error, socket.herror, smtplib.SMTPException) as e:
+        msg = "Error connection to SMTP server. Error: {e}"
         raise SendEmailException(msg)
 
 
@@ -73,11 +70,9 @@ def _smtp_login(smtpserver, user, password):
         return smtpserver
 
     except smtplib.SMTPException as e:
-        smtpserver.close()
-        msg = (
-            "Incorrect authentication data or attempt blocked by SMTP server. "
-            "Error: {}"
-        ).format(e)
+        msg =\
+            "Incorrect authentication data or attempt blocked by SMTP" \
+            " server. Error: {e}"
         raise SendEmailException(msg)
 
 
@@ -116,7 +111,6 @@ def _send(smtpserver, from_address, to_address, message):
     :param from_address:
     :param to_address:
     :param message:
-    :return: True if emails has been sent, else return False.
     """
     smtpserver.sendmail(from_address, to_address, message.as_string())
 
@@ -128,8 +122,6 @@ def send_email(subject, text_message,
     "html_message" and a "to_address", send an e-mail through smtp.
 
     Returns True if e-mail has been sent, else returns False.
-
-    Partially based on https://stackoverflow.com/questions/882712/sending-html-email-using-python  # noqa
     """
     from_address = FROM_ADDRESS
     msg = _generate_email_message(subject, from_address, to_address,

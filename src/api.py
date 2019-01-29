@@ -24,11 +24,11 @@ def create_app():
 
     @app.errorhandler(404)
     def not_found(error):
-        return make_response(jsonify({'error': 'Not found'}), 404)
+        return make_response(jsonify({'error': error.description}), 404)
 
     @app.errorhandler(400)
-    def not_found(error):
-        return make_response(jsonify({'error': 'Bad request'}), 400)
+    def bad_request(error):
+        return make_response(jsonify({'error': error.description}), 400)
 
     @app.route("/emails/", endpoint='email_list', methods=['GET'])
     def email_list():
@@ -42,18 +42,21 @@ def create_app():
         else:
             emails = Email.query.order_by(Email.id).limit(limit).all()
 
-        return jsonify([{'id': email.id,
-                         'from_address': email.from_address,
-                         'to_address': email.to_address,
-                         'subject': email.subject,
-                         'text_message': email.text_message,
-                         'html_message': email.html_message,
-                         'created_at': email.created_at,
-                         'sent': email.sent,
-                         'sent_at': email.sent_at,
-                         'retries': email.retries,
-                         } for email in emails]
-                       )
+        return jsonify([
+            {
+                'id': email.id,
+                'from_address': email.from_address,
+                'to_address': email.to_address,
+                'subject': email.subject,
+                'text_message': email.text_message,
+                'html_message': email.html_message,
+                'created_at': email.created_at,
+                'sent': email.sent,
+                'sent_at': email.sent_at,
+                'retries': email.retries,
+            }
+            for email in emails
+        ])
 
     @app.route('/emails/', endpoint='create_email', methods=['POST'])
     def create_email():
@@ -71,11 +74,13 @@ def create_app():
 
         from_address = conf.FROM_ADDRESS
 
-        new_email = Email(from_address=from_address,
-                          to_address=to_address if to_address else conf.DEFAULT_TO_ADDRESS,
-                          subject=subject,
-                          text_message=text_message,
-                          html_message=html_message)
+        new_email = Email(
+            from_address=from_address,
+            to_address=to_address if to_address else conf.DEFAULT_TO_ADDRESS,
+            subject=subject,
+            text_message=text_message,
+            html_message=html_message
+        )
 
         sent = 'false'
         if autosend == 'true':
@@ -92,17 +97,20 @@ def create_app():
         if not email:
             abort(404)
 
-        return jsonify({'id': email.id,
-                        'from_address': email.from_address,
-                        'to_address': email.to_address,
-                        'subject': email.subject,
-                        'text_message': email.text_message,
-                        'html_message': email.html_message,
-                        'created_at': email.created_at,
-                        'sent': email.sent,
-                        'sent_at': email.sent_at,
-                        'retries': email.retries,
-                        })
+        return jsonify(
+            {
+                'id': email.id,
+                'from_address': email.from_address,
+                'to_address': email.to_address,
+                'subject': email.subject,
+                'text_message': email.text_message,
+                'html_message': email.html_message,
+                'created_at': email.created_at,
+                'sent': email.sent,
+                'sent_at': email.sent_at,
+                'retries': email.retries,
+             }
+        )
 
     @app.route("/emails/<int:email_id>/send", endpoint='send_email', methods=['POST'])
     def send_email(email_id):
@@ -111,8 +119,18 @@ def create_app():
         sent = email.send()
 
         if sent:
-            return jsonify({'id': email.id, 'sent_date': email.sent_at, 'response': 'OK'})
-        return jsonify({'response': 'KO'})
+            return jsonify(
+                {
+                    'id': email.id,
+                    'sent_date': email.sent_at,
+                    'response': 'OK'
+                }
+            )
+        return jsonify(
+            {
+                'response': 'KO'
+            }
+        )
 
     db.create_all()  # Should this be here?
     return app

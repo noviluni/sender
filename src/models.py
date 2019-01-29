@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import validates
 
 from conf import DEFAULT_TO_ADDRESS
-from utils import send_email
+from emails import send_email
 
 db = SQLAlchemy()
 
@@ -27,7 +27,7 @@ class Email(db.Model):
     retries = db.Column(db.Integer, server_default='0')
 
     def __repr__(self):
-        return '<Email {} - {}: {}>'.format(self.id, self.to_address, self.subject)
+        return '<Email {self.id} - {self.to_address}: {self.subject}>'
 
     def __init__(self, from_address, to_address, subject, text_message, html_message, created_at=None, sent=False):
         self.from_address = from_address

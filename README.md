@@ -10,18 +10,14 @@ This is a proof of concept. A RESTful microservice to send e-mails using smtp cr
 
 #### Credentials
 
+It's necessary to create the `.env` file:
+
 ```bash
-cp conf.py.template conf.py
+cp .env.template .env
 ```
 
 And fill all variables.
 
-
-#### To install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
 
 #### To run the webserver:
 
@@ -58,7 +54,7 @@ Determines if email should be sent in the same moment or not.
 
 __Body (json)__:
 
-```
+```json
 {
   "subject": "Hi!",
   "text_message": "This is my first e-mail using sender webservice!"
@@ -74,6 +70,18 @@ __Headers__:
 
 #### To send an email:
 
-To send a created email
+You can send an email passing 'true' to autosend parameter when creating it.
 
-You can send an email passing 'true' to autosend parameter when creating.
+If you need to send an email which is already created, you should do:
+```
+POST to http://0.0.0.0:3000/emails/<int:email_id>/send
+```
+
+
+#### To run the tests:
+
+Execute next lines from src:
+
+```bash
+pytest --cov=. --flake8 tests/
+```

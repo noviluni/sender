@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-from conf import (
+from config import (
     FROM_ADDRESS,
     EMAIL_PASSWORD,
     DEFAULT_TO_ADDRESS,
@@ -34,7 +34,8 @@ def get_smtp_connection(smtp_host=SMTP_HOST, port=SMTP_PORT):
         yield smtp_server
 
     finally:
-        smtp_server.close()
+        if smtp_server:
+            smtp_server.close()
 
 
 def _get_smtp_connection(smtp_host, port):
@@ -46,14 +47,14 @@ def _get_smtp_connection(smtp_host, port):
     :return: smtpserver (SMTP object)
     """
     try:
-        smtpserver = smtplib.SMTP(smtp_host, port)
-        smtpserver.ehlo()
-        smtpserver.starttls()
-        smtpserver.ehlo()
-        return smtpserver
+        smtp_server = smtplib.SMTP(smtp_host, port)
+        smtp_server.ehlo()
+        smtp_server.starttls()
+        smtp_server.ehlo()
+        return smtp_server
 
     except (socket.gaierror, socket.error, socket.herror, smtplib.SMTPException) as e:
-        msg = "Error connection to SMTP server. Error: {e}"
+        msg = f'Error connection to SMTP server. Error: {e}'
         raise SendEmailException(msg)
 
 
@@ -71,8 +72,8 @@ def _smtp_login(smtpserver, user, password):
 
     except smtplib.SMTPException as e:
         msg =\
-            "Incorrect authentication data or attempt blocked by SMTP" \
-            " server. Error: {e}"
+            f'Incorrect authentication data or attempt blocked by SMTP' \
+            f' server. Error: {e}'
         raise SendEmailException(msg)
 
 

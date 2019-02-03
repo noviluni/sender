@@ -3,8 +3,8 @@ from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import validates
 
-from conf import DEFAULT_TO_ADDRESS
-from emails import send_email
+from config import DEFAULT_TO_ADDRESS
+from email_utils import send_email
 
 db = SQLAlchemy()
 
@@ -27,27 +27,27 @@ class Email(db.Model):
     retries = db.Column(db.Integer, server_default='0')
 
     def __repr__(self):
-        return '<Email {self.id} - {self.to_address}: {self.subject}>'
+        return f'<Email {self.id or "(new)"} - {self.to_address}: {self.subject}>'
 
-    def __init__(self, from_address, to_address, subject, text_message, html_message, created_at=None, sent=False):
+    def __init__(
+            self, from_address, to_address, subject, text_message,
+            html_message, created_at=None, sent=False
+    ):
         self.from_address = from_address
         self.to_address = to_address
         self.subject = subject
         self.text_message = text_message
         self.html_message = html_message
-        self.created_at = datetime.utcnow() if created_at is None else created_at
+        self.created_at = datetime.utcnow() if not created_at else created_at
         self.sent = sent
     
     @validates('from_address', 'to_address')
     def _validate_email(self, key, address):
-        assert '@' in address
+        assert '@' in address, f'No \'@\' in {key}'
         return address
 
     def send(self, sender_function=send_email):
-        if self.retries is None:
-            self.retries = 1
-        else:
-            self.retries += 1
+        self.retries += 1
         email_data = self.get_email_data()
         sent = sender_function(**email_data)
 

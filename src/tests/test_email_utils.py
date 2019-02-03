@@ -5,8 +5,8 @@ from unittest.mock import Mock
 
 import pytest
 
-from emails import _generate_email_message, _smtp_login, SendEmailException, \
-    _send, get_smtp_connection, send_email
+from email_utils import _generate_email_message, _smtp_login, \
+    SendEmailException, _send, get_smtp_connection, send_email
 
 
 @pytest.fixture
@@ -19,9 +19,13 @@ def message_mock():
     return Mock(MIMEMultipart('alternative'))
 
 
-@mock.patch('emails._get_smtp_connection', return_value=smtpserver_mock())
-@mock.patch('emails._smtp_login', return_value=smtpserver_mock())
-def test__get_smtp_connection(mocked_get_smtp_connection, mocked_smtp_login):
+@mock.patch('email_utils._get_smtp_connection')
+@mock.patch('email_utils._smtp_login')
+def test__get_smtp_connection(mocked_get_smtp_connection, mocked_smtp_login,
+                              smtpserver_mock):
+    mocked_get_smtp_connection.return_value = smtpserver_mock
+    mocked_smtp_login.return_value = smtpserver_mock
+
     with get_smtp_connection() as smtp_server:  # noqa
         pass
     mocked_get_smtp_connection.assert_called_once()
@@ -69,22 +73,28 @@ def test__send(smtpserver_mock, message_mock):
     smtpserver_mock.sendmail.assert_called_once()
 
 
-@mock.patch('emails._generate_email_message', return_value=message_mock())
-@mock.patch('emails.get_smtp_connection', yield_value=smtpserver_mock())
-@mock.patch('emails._send')
+@mock.patch('email_utils._generate_email_message')
+@mock.patch('email_utils.get_smtp_connection')
+@mock.patch('email_utils._send')
 def test_send_email_ok(generate_email_message_mock, get_smtp_connection_mock,
-                       _send_mock):
+                       _send_mock, message_mock, smtpserver_mock):
+    generate_email_message_mock.return_value = message_mock
+    get_smtp_connection_mock.yield_value = smtpserver_mock
     subject = 'testing subject'
     text_message = 'test messages'
     to_address = 'testing2@test.com'
     send_email(subject, text_message, to_address=to_address)
+    generate_email_message_mock.assert_called_once()
+    get_smtp_connection_mock.assert_called_once()
 
 
-@mock.patch('emails._generate_email_message', return_value=message_mock())
-@mock.patch('emails.get_smtp_connection', yield_value=smtpserver_mock())
-@mock.patch('emails._send', side_effect=smtplib.SMTPException)
+@mock.patch('email_utils._generate_email_message')
+@mock.patch('email_utils.get_smtp_connection')
+@mock.patch('email_utils._send', side_effect=smtplib.SMTPException)
 def test_send_email_ko(generate_email_message_mock, get_smtp_connection_mock,
-                       _send_mock):
+                       _send_mock, message_mock, smtpserver_mock):
+    generate_email_message_mock.return_value = message_mock
+    get_smtp_connection_mock.yield_value = smtpserver_mock
     subject = 'testing subject'
     text_message = 'test messages'
     to_address = 'testing2@test.com'

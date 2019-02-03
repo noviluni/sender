@@ -1,0 +1,9 @@
+version: "3"
+
+services:
+  sender:
+    command: pytest --cov=. --flake8
+    build:
+      context: .
+      args:
+        - requirements=testing

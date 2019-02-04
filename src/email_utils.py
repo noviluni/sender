@@ -53,7 +53,10 @@ def _get_smtp_connection(smtp_host, port):
         smtp_server.ehlo()
         return smtp_server
 
-    except (socket.gaierror, socket.error, socket.herror, smtplib.SMTPException) as e:
+    except (socket.gaierror,
+            socket.error,
+            socket.herror,
+            smtplib.SMTPException) as e:
         msg = f'Error connection to SMTP server. Error: {e}'
         raise SendEmailException(msg)
 

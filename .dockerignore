@@ -8,12 +8,15 @@ LICENSE
 Dockerfile
 .dockerignore
 docker-compose.yml
+docker-compose.test.yml
 Makefile
 
 # Enviroment
 .env
 .env.template
+.env.testing
 
-# Develop
+# Development
 .idea/*
 messages.db
+testing.db

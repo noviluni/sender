@@ -1,10 +1,11 @@
 version: "3"
+
 services:
   sender:
-    build: .
     command: python src/run.py
     env_file:
-     - .env
+      - .env
+    build: .
     ports:
       - "3000:3000"
     volumes:
@@ -15,6 +16,6 @@ services:
   db:
     image: postgres:11
     environment:
-      - POSTGRES_PASSWORD=sender_pwd
-      - POSTGRES_USER=sender_usr
       - POSTGRES_DB=sender_db
+      - POSTGRES_USER=sender_usr
+      - POSTGRES_PASSWORD=sender_pwd

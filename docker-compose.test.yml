@@ -2,8 +2,17 @@ version: "3"
 
 services:
   sender:
-    command: pytest --cov=. --flake8
+    working_dir: /src/src
+    command: pytest --cov=. --flake8 tests/
+    env_file:
+      - .env.testing
     build:
       context: .
       args:
         - requirements=testing
+
+  db:
+    environment:
+      - POSTGRES_DB=sender_testing_db
+      - POSTGRES_USER=sender_testing_usr
+      - POSTGRES_PASSWORD=sender_testing_pwd

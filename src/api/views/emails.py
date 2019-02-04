@@ -12,9 +12,11 @@ def email_list():
     sent = request.args.get('sent')
 
     if sent == 'true':
-        emails = Email.query.filter_by(sent=True).order_by(Email.id).limit(limit).all()
+        emails = Email.query.filter_by(sent=True).\
+            order_by(Email.id).limit(limit).all()
     elif sent == 'false':
-        emails = Email.query.filter_by(sent=False).order_by(Email.id).limit(limit).all()
+        emails = Email.query.filter_by(sent=False).\
+            order_by(Email.id).limit(limit).all()
     else:
         emails = Email.query.order_by(Email.id).limit(limit).all()
 
@@ -91,7 +93,9 @@ def email_detail(email_id):
     )
 
 
-@mod.route('/emails/<int:email_id>/send', endpoint='send_email', methods=['POST'])
+@mod.route(
+    '/emails/<int:email_id>/send', endpoint='send_email', methods=['POST']
+)
 def send_email(email_id):
     email = Email.query.filter_by(id=email_id).first()
     sent = email.send()
@@ -109,4 +113,3 @@ def send_email(email_id):
             'response': 'KO'
         }
     )
-

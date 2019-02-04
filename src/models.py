@@ -15,11 +15,12 @@ class Email(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     
     from_address = db.Column(db.String(200), nullable=False)
-    to_address = db.Column(db.String(200), nullable=False, default=DEFAULT_TO_ADDRESS)
-
+    to_address = db.Column(
+        db.String(200), nullable=False, default=DEFAULT_TO_ADDRESS
+    )
     subject = db.Column(db.String(255), nullable=False)
-    text_message = db.Column(db.String(200), nullable=False)  # TODO: Define bigger body?
-    html_message = db.Column(db.String(200))  # TODO: Define bigger body?
+    text_message = db.Column(db.String(200), nullable=False)
+    html_message = db.Column(db.String(200))
 
     created_at = db.Column(db.DateTime, nullable=False)
     sent = db.Column(db.Boolean(), server_default='f', nullable=False)
@@ -27,7 +28,8 @@ class Email(db.Model):
     retries = db.Column(db.Integer, server_default='0')
 
     def __repr__(self):
-        return f'<Email {self.id or "(new)"} - {self.to_address}: {self.subject}>'
+        return f'<Email {self.id or "(new)"} ' \
+            f'- {self.to_address}: {self.subject}>'
 
     def __init__(
             self, from_address, to_address, subject, text_message,
@@ -40,7 +42,7 @@ class Email(db.Model):
         self.html_message = html_message
         self.created_at = datetime.utcnow() if not created_at else created_at
         self.sent = sent
-    
+
     @validates('from_address', 'to_address')
     def _validate_email(self, key, address):
         assert '@' in address, f'No \'@\' in {key}'
@@ -55,7 +57,7 @@ class Email(db.Model):
             self.sent = True
             self.sent_at = datetime.utcnow()
         return sent
-    
+
     def get_email_data(self):
         return {
             'subject': self.subject,

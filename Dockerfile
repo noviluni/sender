@@ -1,5 +1,4 @@
 FROM python:3.6-alpine
-
 MAINTAINER Marc Hernandez "noviluni@gmail.com"
 
 RUN apk update && apk add postgresql-dev gcc python3-dev musl-dev

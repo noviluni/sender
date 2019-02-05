@@ -5,28 +5,15 @@ import pytest
 from models import Email
 
 
-def new_email(db):
-    email = Email(
-        from_address='test@test.com',
-        to_address='test2@test.com',
-        subject='test_subject',
-        text_message='test_text_message',
-        html_message='test_text_message',
-    )
-    db.session.add(email)
-    db.session.commit()
-    return email
-
-
-def test__validate_email(db):
-    email = Email.query.filter_by(id=new_email(db).id).first()
+def test__validate_email(email):
+    email = Email.query.filter_by(id=email.id).first()
     assert email._validate_email('from_address', 'hola@hola.com')
     with pytest.raises(AssertionError):
         email._validate_email('from_address', 'hola')
 
 
-def test_get_email_data(db):
-    email = Email.query.filter_by(id=new_email(db).id).first()
+def test_get_email_data(email):
+    email = Email.query.filter_by(id=email.id).first()
     data = email.get_email_data()
     assert len(data) == 4
     assert data.get('subject') == 'test_subject'
@@ -44,8 +31,8 @@ def fake_sender_function_ko(**kwargs):
 
 
 @mock.patch('models.Email.get_email_data', return_value={})
-def test_send_ok(get_email_data_mocked, db):
-    email = Email.query.filter_by(id=new_email(db).id).first()
+def test_send_ok(get_email_data_mocked, email):
+    email = Email.query.filter_by(id=email.id).first()
     assert email.retries == 0
     assert not email.sent_at
     sent = email.send(sender_function=fake_sender_function_ok)
@@ -60,8 +47,8 @@ def test_send_ok(get_email_data_mocked, db):
 
 
 @mock.patch('models.Email.get_email_data', return_value={})
-def test_send_ko(get_email_data_mocked, db):
-    email = Email.query.filter_by(id=new_email(db).id).first()
+def test_send_ko(get_email_data_mocked, email):
+    email = Email.query.filter_by(id=email.id).first()
     assert email.retries == 0
     assert not email.sent_at
     sent = email.send(sender_function=fake_sender_function_ko)

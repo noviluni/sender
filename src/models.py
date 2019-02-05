@@ -3,7 +3,6 @@ from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import validates
 
-from config import DEFAULT_TO_ADDRESS
 from email_utils import send_email
 
 db = SQLAlchemy()
@@ -15,9 +14,7 @@ class Email(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     
     from_address = db.Column(db.String(200), nullable=False)
-    to_address = db.Column(
-        db.String(200), nullable=False, default=DEFAULT_TO_ADDRESS
-    )
+    to_address = db.Column(db.String(200), nullable=False)
     subject = db.Column(db.String(255), nullable=False)
     text_message = db.Column(db.String(200), nullable=False)
     html_message = db.Column(db.String(200))
@@ -49,7 +46,10 @@ class Email(db.Model):
         return address
 
     def send(self, sender_function=send_email):
-        self.retries += 1
+        if self.retries is None:
+            self.retries = 1
+        else:
+            self.retries += 1
         email_data = self.get_email_data()
         sent = sender_function(**email_data)
 

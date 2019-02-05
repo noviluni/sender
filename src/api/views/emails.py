@@ -63,7 +63,8 @@ def create_email():
 
     sent = 'false'
     if autosend == 'true':
-        sent = new_email.send()
+        sent_result = new_email.send()
+        sent = 'true' if sent_result else 'false'
 
     db.session.add(new_email)
     db.session.commit()
@@ -85,9 +86,9 @@ def email_detail(email_id):
             'subject': email.subject,
             'text_message': email.text_message,
             'html_message': email.html_message,
-            'created_at': email.created_at,
+            'created_at': str(email.created_at),
             'sent': email.sent,
-            'sent_at': email.sent_at,
+            'sent_at': str(email.sent_at) if email.sent_at else '',
             'retries': email.retries,
         }
     )
@@ -98,13 +99,17 @@ def email_detail(email_id):
 )
 def send_email(email_id):
     email = Email.query.filter_by(id=email_id).first()
+
+    if not email:
+        abort(404)
+
     sent = email.send()
 
     if sent:
         return jsonify(
             {
                 'id': email.id,
-                'sent_date': email.sent_at,
+                'sent_date': str(email.sent_at),
                 'response': 'OK'
             }
         )

@@ -15,13 +15,11 @@ def create_app():
     app.register_blueprint(main.mod)
     app.register_blueprint(emails.mod)
 
-    @app.errorhandler(404)
-    def not_found(error):
-        return jsonify({'error': error.description}), 404
-
     @app.errorhandler(400)
-    def bad_request(error):
-        return jsonify({'error': error.description}), 400
+    @app.errorhandler(404)
+    @app.errorhandler(405)
+    def not_found(error):
+        return jsonify({'error': error.description}), error.code
 
     db.create_all()
     return app

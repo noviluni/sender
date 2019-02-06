@@ -1,3 +1,5 @@
+from unittest import mock
+
 import pytest
 from flask import url_for
 
@@ -74,8 +76,10 @@ def test_email_list_sent(sent_param, sent_query, client, email, email_sent):
     (False, '', 'false'),
     (True, '?autosend=true', 'true')
 ])
-# @mock.patch('models.send_email', return_value=True)
-def test_create_email_ok(autosend, param, sent_value, client):
+@mock.patch('models.send_email', return_value=True)
+def test_create_email_ok(
+        send_email_mocked, autosend, param, sent_value, client
+):
     response = client.post(
         url_for('emails.create_email')+param,
         json={
@@ -83,12 +87,13 @@ def test_create_email_ok(autosend, param, sent_value, client):
             'text_message': 'test_text_message'
         }
     )
-    # send_email_mocked.assert_called_once()
     assert response.status_code == 201
     assert response.json.get('id') == Email.query.order_by(
         Email.id.desc()
     )[-1].id
     assert response.json.get('sent') == sent_value
+    if autosend:
+        send_email_mocked.assert_called_once()
 
 
 def test_create_email_ko(client):
@@ -96,40 +101,25 @@ def test_create_email_ko(client):
     assert response.status_code == 400
 
 
-# @mock.patch('models.send_email', return_value=True)
-def test_send_email_ok(client, email):
+@mock.patch('models.send_email', return_value=True)
+def test_send_email_ok(send_email_mocked, client, email):
     assert email.sent is False
     assert email.sent_at is None
     response = client.post(url_for('emails.send_email', email_id=email.id))
-    # send_email_mocked.assert_called_once()
+    send_email_mocked.assert_called_once()
     assert response.status_code == 200
     assert response.json.get('id') == email.id
     assert response.json.get('sent_date') == str(email.sent_at)
     assert response.json.get('response') == 'OK'
 
 
-def test_send_email_ko(client):
+@mock.patch('models.send_email', return_value=False)
+def test_send_email_ko(send_email_mocked, client, email):
     response = client.post(
         url_for('emails.send_email', email_id=0),
     )
     assert response.status_code == 404
-
-# # @mod.route('/emails/<int:email_id>/send', endpoint='send_email',
-# # methods=['POST'])
-# # def send_email(email_id):
-# #     email = Email.query.filter_by(id=email_id).first()
-# #     sent = email.send()
-# #
-# #     if sent:
-# #         return jsonify(
-# #             {
-# #                 'id': email.id,
-# #                 'sent_date': email.sent_at,
-# #                 'response': 'OK'
-# #             }
-# #         )
-# #     return jsonify(
-# #         {
-# #             'response': 'KO'
-# #         }
-# #     )
+    response = client.post(url_for('emails.send_email', email_id=email.id))
+    send_email_mocked.assert_called_once()
+    assert response.status_code == 200
+    assert response.json.get('response') == 'KO'

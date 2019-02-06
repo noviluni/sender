@@ -2,7 +2,7 @@ version: "3"
 
 services:
   sender:
-    working_dir: /src/src
+    working_dir: /app/src
     command: pytest --cov=. --flake8 tests/
     env_file:
       - .env.testing

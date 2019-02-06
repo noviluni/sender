@@ -18,5 +18,3 @@ Makefile
 
 # Development
 .idea/*
-messages.db
-testing.db

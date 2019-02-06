@@ -45,7 +45,8 @@ class Email(db.Model):
         assert '@' in address, f'No \'@\' in {key}'
         return address
 
-    def send(self, sender_function=send_email):
+    def send(self, sender_function=None):
+        sender_function = sender_function if sender_function else send_email
         if self.retries is None:
             self.retries = 1
         else:

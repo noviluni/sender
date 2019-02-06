@@ -1,6 +1,5 @@
 .idea/*
 .env
-.env.testing
 src/.coverage
 .cache/*
 .pytest_cache/*

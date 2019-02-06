@@ -1,9 +1,10 @@
 .idea/*
 .env
 .env.testing
+src/.coverage
 .cache/*
 .pytest_cache/*
-__pycache__/*
+__pycache__/
 */__pycache__/*
 */*/__pycache__/*
 messages.db

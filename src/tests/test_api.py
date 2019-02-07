@@ -73,8 +73,8 @@ def test_email_list_sent(sent_param, sent_query, client, email, email_sent):
 
 
 @pytest.mark.parametrize("autosend,param,sent_value", [
-    (False, '', 'false'),
-    (True, '?autosend=true', 'true')
+    (False, '', False),
+    (True, '?autosend=true', True)
 ])
 @mock.patch('models.send_email', return_value=True)
 def test_create_email_ok(
@@ -109,8 +109,7 @@ def test_send_email_ok(send_email_mocked, client, email):
     send_email_mocked.assert_called_once()
     assert response.status_code == 200
     assert response.json.get('id') == email.id
-    assert response.json.get('sent_date') == str(email.sent_at)
-    assert response.json.get('response') == 'OK'
+    assert response.json.get('sent') is True
 
 
 @mock.patch('models.send_email', return_value=False)
@@ -122,4 +121,4 @@ def test_send_email_ko(send_email_mocked, client, email):
     response = client.post(url_for('emails.send_email', email_id=email.id))
     send_email_mocked.assert_called_once()
     assert response.status_code == 200
-    assert response.json.get('response') == 'KO'
+    assert response.json.get('sent') is False

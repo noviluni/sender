@@ -1,17 +1,16 @@
 from flask import Flask, jsonify
 
+from api.views import main, emails
 from models import db
 
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder=None, static_url_path=None)
     app.config.from_object('config')
 
     db.app = app
     db.init_app(app)
 
-    from api.views import main
-    from api.views import emails
     app.register_blueprint(main.mod)
     app.register_blueprint(emails.mod)
 

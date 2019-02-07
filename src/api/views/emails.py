@@ -8,14 +8,15 @@ mod = Blueprint('emails', __name__)
 
 @mod.route('/emails/', endpoint='email_list', methods=['GET'])
 def email_list():
-    limit = int(request.args.get('limit', 10))
-    sent = request.args.get('sent')
+    try:
+        limit = int(request.args.get('limit', config.DEFAULT_LIMIT))
+    except ValueError:
+        limit = config.DEFAULT_LIMIT
 
-    if sent == 'true':
-        emails = Email.query.filter_by(sent=True).\
-            order_by(Email.id).limit(limit).all()
-    elif sent == 'false':
-        emails = Email.query.filter_by(sent=False).\
+    sent = request.args.get('sent')
+    if sent == 'true' or sent == 'false':
+        sent_q = True if sent == 'true' else False
+        emails = Email.query.filter_by(sent=sent_q).\
             order_by(Email.id).limit(limit).all()
     else:
         emails = Email.query.order_by(Email.id).limit(limit).all()
@@ -28,9 +29,9 @@ def email_list():
             'subject': email.subject,
             'text_message': email.text_message,
             'html_message': email.html_message,
-            'created_at': email.created_at,
+            'created_at': str(email.created_at),
             'sent': email.sent,
-            'sent_at': email.sent_at,
+            'sent_at': str(email.sent_at) if email.sent_at else '',
             'retries': email.retries,
         }
         for email in emails
@@ -61,17 +62,16 @@ def create_email():
         html_message=html_message
     )
 
-    sent = 'false'
+    sent = False
     if autosend == 'true':
-        sent_result = new_email.send()
-        sent = 'true' if sent_result else 'false'
+        sent = new_email.send()
 
     db.session.add(new_email)
     db.session.commit()
     return jsonify({'id': new_email.id, 'sent': sent}), 201
 
 
-@mod.route('/emails/<int:email_id>', endpoint='email_detail', methods=['GET'])
+@mod.route('/emails/<int:email_id>/', endpoint='email_detail', methods=['GET'])
 def email_detail(email_id):
     email = Email.query.filter_by(id=email_id).first()
 
@@ -95,7 +95,7 @@ def email_detail(email_id):
 
 
 @mod.route(
-    '/emails/<int:email_id>/send', endpoint='send_email', methods=['POST']
+    '/emails/<int:email_id>/send/', endpoint='send_email', methods=['POST']
 )
 def send_email(email_id):
     email = Email.query.filter_by(id=email_id).first()
@@ -105,16 +105,9 @@ def send_email(email_id):
 
     sent = email.send()
 
-    if sent:
-        return jsonify(
-            {
-                'id': email.id,
-                'sent_date': str(email.sent_at),
-                'response': 'OK'
-            }
-        )
     return jsonify(
         {
-            'response': 'KO'
+            'id': email.id,
+            'sent': sent,
         }
     )

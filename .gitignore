@@ -3,6 +3,7 @@
 src/.coverage
 .cache/*
 .pytest_cache/*
+src/.pytest_cache/*
 __pycache__/
 */__pycache__/*
 */*/__pycache__/*

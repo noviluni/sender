@@ -46,7 +46,7 @@ class Email(db.Model):
         return address
 
     def send(self, sender_function=None):
-        sender_function = sender_function if sender_function else send_email
+        sender_function = sender_function or send_email
         if self.retries is None:
             self.retries = 1
         else:

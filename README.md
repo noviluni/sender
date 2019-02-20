@@ -42,7 +42,7 @@ GET to http://0.0.0.0:3000/emails/
 
 Returns a list of all created e-mails.
 
-__Url parameters__:
+__URL parameters__:
 
 ```
 limit: int (optional)
@@ -138,7 +138,7 @@ Response:
 POST to http://0.0.0.0:3000/emails/
 ```
 
-__Url parameters__:
+__URL parameters__:
 
 ```
 autosend: true|false (optional)
